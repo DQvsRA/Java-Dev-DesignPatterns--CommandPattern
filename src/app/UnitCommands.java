@@ -44,6 +44,7 @@ public class UnitCommands extends PApplet
 	private final Path path = new Path();
 
 	public boolean clickPossible = true;
+	public boolean showHistoryPath = false;
 
 	public void settings() { size(SIZE,SIZE); }
 
@@ -54,11 +55,11 @@ public class UnitCommands extends PApplet
 		unit = new Unit(this);
 		gui = new GUI(this);
 		path.setCanvas(this);
-		path.setColor(color(30, 30, 30));
+		path.setColor(color(50, 50, 50));
 
-		unitMoveCommands.put(MoveType.WALK, WalkMoveUnitCommand.class);
-		unitMoveCommands.put(MoveType.RUN, 	RunMoveUnitCommand.class);
-		unitMoveCommands.put(MoveType.JUMP, JumpMoveUnitCommand.class);
+		unitMoveCommands.put(MoveType.WALK, WalkMoveUnitCommand.class	);
+		unitMoveCommands.put(MoveType.RUN, 	RunMoveUnitCommand.class	);
+		unitMoveCommands.put(MoveType.JUMP, JumpMoveUnitCommand.class	);
 
 		processCommands.put(ProcessCommand.CREATE_UNIT_MOVE, new CreateUnitMoveCommand(unitMoveCommands, commandsList, path));
 		processCommands.put(ProcessCommand.COMPLETE_UNIT_MOVE, new CompleteUnitMoveCommand(commandsList, path));
@@ -74,6 +75,17 @@ public class UnitCommands extends PApplet
 			}
 		});
 		gui.getMenu().setSelectedMoveType(MoveType.JUMP);
+		gui.getHistoryButton().onClick(new CallbackListener() {
+			public void controlEvent(CallbackEvent evnt) {
+				System.out.println("Back in History");
+			}
+		});
+		gui.getHistoryShowPathToggle().onChange(new CallbackListener() {
+			public void controlEvent(CallbackEvent evnt) {
+				System.out.println("Show History Path");
+				showHistoryPath = !showHistoryPath;
+			}
+		});
 
 		markers = new Markers(this, 6, 150, H.BLUE);
 
@@ -100,8 +112,9 @@ public class UnitCommands extends PApplet
 		path.draw();
 		unit.draw();
 		markers.draw();
-
+		
+		if(showHistoryPath) {
+			
+		}
 	}
-	
-	
 }

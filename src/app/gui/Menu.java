@@ -6,13 +6,13 @@ import controlP5.DropdownList;
 
 public final class Menu extends DropdownList 
 {
-	public Menu(ControlP5 controls, String name)
+	public Menu(ControlP5 controls, String name, int height)
 	{
 		super(controls, name);
 				
 		for (MoveType moveType : MoveType.values()) this.addItem(moveType.toString(), moveType);
 		
-		this.setBarHeight(24);
+		this.setBarHeight(height);
 		this.setType(DropdownList.DROPDOWN);
 	}
 	
