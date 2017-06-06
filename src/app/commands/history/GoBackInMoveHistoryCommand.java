@@ -1,16 +1,15 @@
 package app.commands.history;
 
+import java.awt.Point;
+
 import app.Invoker;
 import app.commands.Command;
-import app.commands.unit.move.MoveUnitCommandBase;
+import app.commands.unit.MoveUnitCommandBase;
 import app.entities.Unit;
-import app.enums.MoveType;
 import app.enums.ProcessCommand;
 
-public class GoBackInMoveHistoryCommand extends Command {
-
-	private MoveType _moveType;
-	
+public class GoBackInMoveHistoryCommand extends Command 
+{
 	public void execute() 
 	{
 		Invoker invoker = Invoker.getInstance();
@@ -18,28 +17,15 @@ public class GoBackInMoveHistoryCommand extends Command {
 		
 		if(invoker.previousHistoryCommandExist()) 
 		{
-			MoveUnitCommandBase command = (MoveUnitCommandBase) invoker.getPreviousMoveHistoryCommand();
-			Unit unit = command.getUnit();
-			MoveType commandUnitMoveType = unit.getMoveType();
-			if(_moveType != null && _moveType != commandUnitMoveType) {
-				invoker.executeProcessCommand(ProcessCommand.CHANGE_UNIT_MOVE_TYPE, unit);
-			}
-			_moveType = commandUnitMoveType;
-			invoker.executeProcessCommandWithAnotherCommand(ProcessCommand.DO_UNIT_MOVE, command);
+			MoveUnitCommandBase currentCommand = (MoveUnitCommandBase) invoker.getCurrentMoveCommand();
+			MoveUnitCommandBase previousCommand = (MoveUnitCommandBase) invoker.getPreviousMoveHistoryCommand();
+			Unit unit = previousCommand.getUnit();
+			Point position = previousCommand.getToPosition();
+			unit.setMoveType(currentCommand.getMoveType());
+			unit.x = position.x; 
+			unit.y = position.y;
 			
-//			Unit unit = command.getUnit();
-//			Point position = command.getPosition();
-//			System.out.println("\t\t isBusy " + unit.isBusy());
-//			if(unit.isBusy()) {
-//				path.add(position);
-//				invoker.queueMoveCommand(command);
-//			} else {
-//				path.add(unit.getPosition());
-//				invoker.setLastMoveCommand(command);
-//				Ani.killAll();
-//				command.execute();
-//				path.add(position);
-//			}
+			invoker.executeProcessCommand(ProcessCommand.LOCK_MENU_MOVE_TYPE);
 		}
 	}
 }

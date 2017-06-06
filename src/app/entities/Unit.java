@@ -41,8 +41,8 @@ public class Unit
 	{
 		switch (value) {
 		case JUMP: 	_color = H.MAGENTA; 	break;
-		case WALK: 	_color = H.CYAN; 	break;
-		case RUN: 	_color = H.GREEN; 	break;
+		case WALK: 	_color = H.CYAN; 		break;
+		case RUN: 	_color = H.GREEN; 		break;
 		case FLOW: 	_color = H.RED; 		break;
 		
 		default:

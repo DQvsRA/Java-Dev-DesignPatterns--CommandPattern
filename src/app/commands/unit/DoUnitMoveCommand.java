@@ -5,7 +5,6 @@ import java.awt.Point;
 import app.Invoker;
 import app.commands.Command;
 import app.commands.ICommand;
-import app.commands.unit.move.MoveUnitCommandBase;
 import app.entities.Path;
 import app.entities.Unit;
 import de.looksgood.ani.Ani;
@@ -23,21 +22,24 @@ public final class DoUnitMoveCommand extends Command
 	{
 		System.out.println("DoUnitMoveCommand");
 		
-		MoveUnitCommandBase moveCommand = (MoveUnitCommandBase)commandToExecute;
-		
 		Invoker invoker = Invoker.getInstance();
-		Unit unit = moveCommand.getUnit();
-		Point position = moveCommand.getPosition();
 		
-		if(unit.isBusy()) {
-			path.add(position);
-			invoker.queueMoveCommand(moveCommand);
-		} else {
-			path.add(unit.getPosition());
-			invoker.setLastMoveCommand(moveCommand);
-			Ani.killAll();
+		MoveUnitCommandBase moveCommand = (MoveUnitCommandBase)commandToExecute;
+		Point toPosition = moveCommand.getToPosition();
+		Unit unit = moveCommand.getUnit();
+		Point fromPosition = unit.getPosition();
+		
+		if(path.size() == 0) path.add(fromPosition);
+		
+		if(unit.isBusy()) 
+		{
+			invoker.queueMoveCommand(commandToExecute);
+		} 
+		else 
+		{
+			invoker.setCurrentMoveCommand(commandToExecute);
 			moveCommand.execute();
-			path.add(position);
 		}
+		path.add(toPosition);
 	}
 }

@@ -3,7 +3,7 @@ package app.entities;
 import java.awt.Point;
 
 import app.Invoker;
-import app.commands.unit.move.MoveUnitCommandBase;
+import app.commands.unit.MoveUnitCommandBase;
 import processing.core.PApplet;
 
 public final class History 
@@ -25,8 +25,9 @@ public final class History
 		_canvas.stroke(_canvas.color(230, 230, 50));
 		_canvas.strokeJoin(PApplet.MITER);
 		_canvas.beginShape();
+		
 		_invoker.goThroughMovesHistory((c)->{
-			_tempPoint = ((MoveUnitCommandBase)c).getPosition(); 
+			_tempPoint = ((MoveUnitCommandBase)c).getToPosition(); 
 			_canvas.vertex(_tempPoint.x, _tempPoint.y);
 			_canvas.ellipse(_tempPoint.x, _tempPoint.y, _sizeVert, _sizeVert);
 		});

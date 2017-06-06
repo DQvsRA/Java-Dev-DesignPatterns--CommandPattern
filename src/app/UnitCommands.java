@@ -4,9 +4,13 @@ import java.awt.Point;
 
 import app.commands.history.GoBackInMoveHistoryCommand;
 import app.commands.history.GoForwardInMoveHistoryCommand;
-import app.commands.processing.ChangeUnitMoveTypeCommand;
+import app.commands.history.PlayMoveHistoryFromCurrentCommand;
 import app.commands.processing.CompleteUnitMoveCommand;
 import app.commands.processing.CreateUnitMoveCommand;
+import app.commands.processing.menu.ChangeMenuMoveTypeCommand;
+import app.commands.processing.menu.ChangeUnitMoveTypeCommand;
+import app.commands.processing.menu.LockMenuMoveTypeCommand;
+import app.commands.processing.menu.UnLockMenuMoveTypeCommand;
 import app.commands.unit.DoUnitMoveCommand;
 import app.commands.unit.move.JumpMoveUnitCommand;
 import app.commands.unit.move.RunMoveUnitCommand;
@@ -18,6 +22,7 @@ import app.entities.Unit;
 import app.enums.MoveType;
 import app.enums.ProcessCommand;
 import app.gui.GUI;
+import app.gui.Menu;
 import controlP5.CallbackEvent;
 import controlP5.CallbackListener;
 import controlP5.Controller;
@@ -29,7 +34,7 @@ import processing.event.MouseEvent;
 
 public class UnitCommands extends PApplet 
 {
-	static private final int SIZE = 400;
+	static private final int SIZE = 800;
 	
 	GUI gui;
 	Unit unit;
@@ -56,6 +61,8 @@ public class UnitCommands extends PApplet
 		markers = new Markers(this, 6, H.BLUE);
 		history = new History(this);
 		
+		Menu menu = gui.getMenu();
+		
 		_invoker.registerMoveCommand(MoveType.WALK, 	WalkMoveUnitCommand.class	);
 		_invoker.registerMoveCommand(MoveType.RUN, 		RunMoveUnitCommand.class	);
 		_invoker.registerMoveCommand(MoveType.JUMP, 	JumpMoveUnitCommand.class	);
@@ -63,9 +70,13 @@ public class UnitCommands extends PApplet
 		_invoker.registerProcessCommand(ProcessCommand.DO_UNIT_MOVE, new DoUnitMoveCommand(path));
 		_invoker.registerProcessCommand(ProcessCommand.CREATE_UNIT_MOVE, new CreateUnitMoveCommand());
 		_invoker.registerProcessCommand(ProcessCommand.COMPLETE_UNIT_MOVE, new CompleteUnitMoveCommand(path));
-		_invoker.registerProcessCommand(ProcessCommand.CHANGE_UNIT_MOVE_TYPE, new ChangeUnitMoveTypeCommand(gui.getMenu(), path));
+		_invoker.registerProcessCommand(ProcessCommand.LOCK_MENU_MOVE_TYPE, new LockMenuMoveTypeCommand(menu));
+		_invoker.registerProcessCommand(ProcessCommand.UNLOCK_MENU_MOVE_TYPE, new UnLockMenuMoveTypeCommand(menu));
+		_invoker.registerProcessCommand(ProcessCommand.CHANGE_MENU_MOVE_TYPE, new ChangeMenuMoveTypeCommand(menu));
+		_invoker.registerProcessCommand(ProcessCommand.CHANGE_UNIT_MOVE_TYPE, new ChangeUnitMoveTypeCommand(menu, path));
 		_invoker.registerProcessCommand(ProcessCommand.GO_BACK_IN_MOVE_HISTORY, new GoBackInMoveHistoryCommand());
 		_invoker.registerProcessCommand(ProcessCommand.GO_FORWARD_IN_MOVE_HISTORY, new GoForwardInMoveHistoryCommand());
+		_invoker.registerProcessCommand(ProcessCommand.PLAY_MOVE_HISTORY_FROM_CURRENT, new PlayMoveHistoryFromCurrentCommand());
 		
 		CallbackListener menuCallbackListener = new CallbackListener() {
 			public void controlEvent(CallbackEvent event) 
@@ -80,6 +91,9 @@ public class UnitCommands extends PApplet
 				}
 				else if(controller.equals(gui.getHistoryBackButton())) {
 					_invoker.executeProcessCommand(ProcessCommand.GO_BACK_IN_MOVE_HISTORY);
+				}
+				else if(controller.equals(gui.getHistoryPlayButton())) {
+					_invoker.executeProcessCommand(ProcessCommand.PLAY_MOVE_HISTORY_FROM_CURRENT);
 				}
 				else if(controller.equals(gui.getHistoryShowPathToggle())) {
 					showHistoryPath = !showHistoryPath;

@@ -22,7 +22,7 @@ public final class Invoker
 	private final List<ICommand> _movesHistory = new ArrayList<ICommand>();
 	private final List<ICommand> _commandsQueue = new ArrayList<ICommand>();
 	
-	private ICommand _lastMoveCommand;
+	private ICommand _currentMoveCommand;
 	private int _moveHistoryCurrentCommandIndex;
 	
 	private Invoker() { }
@@ -41,15 +41,19 @@ public final class Invoker
 	
 	public void storeCommandToHistory(ICommand command) {
 		if(_movesHistory.contains(command) == false) {
-			if(_moveHistoryCurrentCommandIndex != (_movesHistory.size() - 1)) {
-				_moveHistoryCurrentCommandIndex += 1;
-				while(_movesHistory.size() > _moveHistoryCurrentCommandIndex)
-					_movesHistory.remove(_moveHistoryCurrentCommandIndex);
+			if(nextHistoryCommandExist()) {
+				clearMoveHistoryFromNextCommand();
 			}
 			_movesHistory.add(command);
 			_moveHistoryCurrentCommandIndex = _movesHistory.size() - 1;
-			System.out.println("storeCommandToHistory " + _moveHistoryCurrentCommandIndex);
+			System.out.println("storeCommandToHistory : " + _moveHistoryCurrentCommandIndex + " | " + command );
 		}
+	}
+	
+	public void clearMoveHistoryFromNextCommand() {
+		_moveHistoryCurrentCommandIndex += 1;
+		while(_movesHistory.size() > _moveHistoryCurrentCommandIndex)
+			_movesHistory.remove(_moveHistoryCurrentCommandIndex);
 	}
 	
 	public boolean previousHistoryCommandExist() {
@@ -57,17 +61,35 @@ public final class Invoker
 	}
 	
 	public boolean nextHistoryCommandExist() {
-		return _moveHistoryCurrentCommandIndex < _movesHistory.size() - 1;
+		System.out.println("getMoveHistoryFromCurrentCommand : " + _moveHistoryCurrentCommandIndex + " | " + (_movesHistory.size() - 1) );
+		return _moveHistoryCurrentCommandIndex < (_movesHistory.size() - 1);
 	}
 	
 	public ICommand getPreviousMoveHistoryCommand() {
-		_moveHistoryCurrentCommandIndex -= 1;
-		return _movesHistory.get(_moveHistoryCurrentCommandIndex);
+		_moveHistoryCurrentCommandIndex--;
+		_currentMoveCommand = _movesHistory.get(_moveHistoryCurrentCommandIndex);
+		return _currentMoveCommand;
 	}
 	
 	public ICommand getNextMoveHistoryCommand() {
-		_moveHistoryCurrentCommandIndex += 1;
-		return _movesHistory.get(_moveHistoryCurrentCommandIndex);
+		_moveHistoryCurrentCommandIndex++;
+		_currentMoveCommand = _movesHistory.get(_moveHistoryCurrentCommandIndex);
+		return _currentMoveCommand;
+	}
+	
+	public List<ICommand> getMoveHistoryFromCurrentCommand() {
+		int historySize = _movesHistory.size() - 1;
+		List<ICommand> result = new ArrayList<ICommand>();
+		while(_moveHistoryCurrentCommandIndex++ < historySize) {
+			result.add(_movesHistory.get(_moveHistoryCurrentCommandIndex));
+		}
+		System.out.println("getMoveHistoryFromCurrentCommand : " + _moveHistoryCurrentCommandIndex + " | " + result.size() );
+		_moveHistoryCurrentCommandIndex = _movesHistory.size() - 1;
+		return result;
+	}
+	
+	public int getMoveHistoryCurrentCommandIndex() {
+		return _moveHistoryCurrentCommandIndex;
 	}
 	
 	public ICommand getProcessCommand(ProcessCommand processKey) {
@@ -86,10 +108,14 @@ public final class Invoker
 		if(_processCommands.containsKey(processKey)) _processCommands.get(processKey).execute();
 	}
 	
+	public void executeProcessCommand(ProcessCommand processKey, MoveType moveType) {
+		if(_processCommands.containsKey(processKey)) _processCommands.get(processKey).execute(moveType);
+	}
+	
 	public void executeProcessCommandWithAnotherCommand(ProcessCommand processKey, ICommand command) {
 		if(_processCommands.containsKey(processKey)) {
 			_processCommands.get(processKey).execute(command);
-			System.out.println("executeProcessCommandWithAnotherCommand : " + _processCommands.get(processKey));
+			//System.out.println("executeProcessCommandWithAnotherCommand : " + _processCommands.get(processKey));
 		}
 	}
 
@@ -105,8 +131,8 @@ public final class Invoker
 		_commandsQueue.add(command);
 	}
 	
-	public List<ICommand> commandQueue() {
-		return _commandsQueue;
+	public void clearMoveCommandQueue() {
+		_commandsQueue.clear();
 	}
 
 	public ICommand getNextQueueMoveCommand() {
@@ -117,11 +143,12 @@ public final class Invoker
 		_movesHistory.forEach(action);
 	}
 	
-	public ICommand getLastMoveCommand() {
-		return _lastMoveCommand;
+	public ICommand getCurrentMoveCommand() {
+		return _currentMoveCommand;
 	}
 	
-	public void setLastMoveCommand(ICommand command) {
-		_lastMoveCommand = command;
+	public void setCurrentMoveCommand(ICommand command) {
+		if(_movesHistory.contains(command)) _moveHistoryCurrentCommandIndex = _movesHistory.indexOf(command);
+		_currentMoveCommand = command;
 	}
 }
