@@ -3,47 +3,41 @@ package app.commands.processing;
 import java.awt.Point;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.Map;
 
+import app.Invoker;
 import app.commands.Command;
 import app.commands.ICommand;
 import app.entities.Unit;
 import app.enums.MoveType;
+import app.enums.ProcessCommand;
 
 public class CreateUnitMoveCommand extends Command
 {
-	private Map<MoveType, Class<?>> unitMoveCommands;
-	private List<ICommand> commandsList;
-	private List<Point> tail;
-
-	public CreateUnitMoveCommand(Map<MoveType, Class<?>> unitMoveCommands, List<ICommand> commandsList, List<Point> tail) 
-	{
-		this.unitMoveCommands = unitMoveCommands;
-		this.commandsList = commandsList;
-		this.tail = tail;
-	}
-
-	@Override
 	public void execute(Unit unit, Point position) 
 	{
-		Class<?> unitMoveCommandClassRef = unitMoveCommands.get(unit.getMoveType());
-		System.out.println("> mouseClicked : " + position.x + "x" + position.y + "| " + unit.getMoveType() + " isBusy: " + unit.isBusy());
+		Invoker invoker = Invoker.getInstance();
+		MoveType moveType = unit.getMoveType();
+		Class<?> unitMoveCommandClassRef = invoker.findMoveCommandClass(moveType);
+		System.out.println("> CreateUnitMoveCommand : " + position.x + "x" + position.y + "| " + moveType + " isBusy: " + unit.isBusy());
 		
 		if(unitMoveCommandClassRef != null) 
 		{
 			try {
 				Constructor<?> ctor = unitMoveCommandClassRef.getConstructor(Unit.class, Point.class);
 				ICommand command = (ICommand) ctor.newInstance(unit, position);
-				if(unit.isBusy()) {
-					commandsList.add(command);
-					tail.add(position);
-					System.out.println("Add to stack " + commandsList.size());
-				} else {
-					tail.add(unit.getPosition());
-					command.execute();
-					tail.add(position);
-				}
+				
+				invoker.executeProcessCommandWithAnotherCommand(ProcessCommand.DO_UNIT_MOVE, command);
+				
+//				if(unit.isBusy()) {
+//					path.add(position);
+//					invoker.queueMoveCommand(command);
+//				} else {
+//					path.add(unit.getPosition());
+//					invoker.setLastMoveCommand(command);
+//					Ani.killAll();
+//					command.execute();
+//					path.add(position);
+//				}
 			} catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}

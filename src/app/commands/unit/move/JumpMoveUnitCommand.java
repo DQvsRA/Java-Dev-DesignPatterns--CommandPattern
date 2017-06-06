@@ -2,11 +2,10 @@ package app.commands.unit.move;
 
 import java.awt.Point;
 
-import app.commands.unit.MoveUnitCommand;
 import app.entities.Unit;
 import de.looksgood.ani.Ani;
 
-public class JumpMoveUnitCommand extends MoveUnitCommand 
+public class JumpMoveUnitCommand extends MoveUnitCommandBase 
 {
 	public JumpMoveUnitCommand(Unit unit, Point position) 
 	{

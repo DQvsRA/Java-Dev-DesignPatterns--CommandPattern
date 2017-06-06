@@ -4,9 +4,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.UnitCommands;
+import app.Invoker;
 import app.commands.Command;
-import app.commands.ICommand;
 import app.entities.Unit;
 import app.enums.MoveType;
 import app.enums.ProcessCommand;
@@ -16,30 +15,33 @@ import de.looksgood.ani.Ani;
 public class ChangeUnitMoveTypeCommand extends Command 
 {
 	private DropdownList moveList;
-	private List<ICommand> commandsList;
-	private List<Point> tail;
+	private List<Point> path;
 
-	public ChangeUnitMoveTypeCommand(DropdownList moveList, List<ICommand> commandsList, List<Point> tail)
+	public ChangeUnitMoveTypeCommand(DropdownList moveList, List<Point> path)
 	{
 		this.moveList = moveList;
-		this.commandsList = commandsList;
-		this.tail = tail;
+		this.path = path;
 	}
 	
-	public void execute(Unit unit, Point position) 
+	public void execute(Unit unit) 
 	{
+		Invoker invoker = Invoker.getInstance();
 		unit.setMoveType(MoveType.values()[(int)moveList.getValue()]);
-		commandsList.clear();
+		invoker.commandQueue().clear();
 		Ani.killAll();
-		if(position != null) {
+		
+		if(path.size() > 0)
+		{
+			Point currentMoveStartPosition = path.remove(0);
 			List<Point> tempPositionsList = new ArrayList<Point>();
-			while(tail.size() > 0) tempPositionsList.add(tail.remove(0));
+			while(path.size() > 0) tempPositionsList.add(path.remove(0));
 			tempPositionsList.forEach((Point p) -> {
-				((ICommand)UnitCommands.processCommands.get(ProcessCommand.CREATE_UNIT_MOVE)).execute(unit, p);
+				invoker.executeProcessCommand(ProcessCommand.CREATE_UNIT_MOVE, unit, p);
 			});
-			tail.add(0, unit.getPosition());				
-			tail.add(0, position);
+			path.add(0, unit.getPosition());				
+			path.add(0, currentMoveStartPosition);
 		}
+		
 		unit.reset();
 		unit.isBusy(false);
 	}

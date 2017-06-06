@@ -2,11 +2,10 @@ package app.commands.unit.move;
 
 import java.awt.Point;
 
-import app.commands.unit.MoveUnitCommand;
 import app.entities.Unit;
 import de.looksgood.ani.Ani;
 
-public class WalkMoveUnitCommand extends MoveUnitCommand 
+public class WalkMoveUnitCommand extends MoveUnitCommandBase 
 {
 	protected int _speed = 200;
 
@@ -15,7 +14,6 @@ public class WalkMoveUnitCommand extends MoveUnitCommand
 		super(unit, finalPosition);
 	}
 
-	@Override
 	public void execute() 
 	{
 		float distance = (float)Math.abs(Point.distance(unit.x, unit.y, position.x, position.y));

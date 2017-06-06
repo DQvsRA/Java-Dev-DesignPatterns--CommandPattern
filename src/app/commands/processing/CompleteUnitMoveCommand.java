@@ -1,8 +1,6 @@
 package app.commands.processing;
 
-import java.util.List;
-
-import app.UnitCommands;
+import app.Invoker;
 import app.commands.Command;
 import app.commands.ICommand;
 import app.entities.Path;
@@ -10,28 +8,28 @@ import de.looksgood.ani.Ani;
 
 public class CompleteUnitMoveCommand extends Command {
 
-	private List<ICommand> commandsList;
 	private Path path;
-	private ICommand _lastCommand = null;
-
-	public CompleteUnitMoveCommand(List<ICommand> commandsList, Path path) {
-		this.commandsList = commandsList;
+	
+	public CompleteUnitMoveCommand(Path path) {
 		this.path = path;
 	}
-	
-	public void execute() {
-		System.out.println("> ActionCompleteCallback : " + commandsList.size());
+
+	public void execute() 
+	{
 		Ani.killAll();
-		if(_lastCommand != null) UnitCommands.historyList.add(_lastCommand);
 		
-		if(commandsList.size() > 0) {
+		Invoker invoker = Invoker.getInstance();
+		
+		ICommand command = invoker.getLastMoveCommand();
+		if(command != null)	invoker.storeCommandToHistory(command);
+		
+		if(invoker.hasQueueMoveCommand()) {
 			path.remove(0);
-			_lastCommand = (ICommand) commandsList.remove(0);
-			_lastCommand.execute();
+			command = (ICommand) invoker.getNextQueueMoveCommand();
+			invoker.setLastMoveCommand(command);
+			command.execute();
 		} else {
 			path.clear();
 		}
-
 	}
-
 }

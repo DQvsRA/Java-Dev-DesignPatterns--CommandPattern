@@ -16,10 +16,10 @@ public class Markers {
 	private Point _tempPoint;
 	private int _pointsCounter;
 	
-	public Markers(PApplet canvas, int size, int padding, int color) {
+	public Markers(PApplet canvas, int size, int color) {
 		_canvas = canvas;
 		_size = size;
-		_padding = padding;
+		_padding = (int) (canvas.width * 0.2);
 		_color = color;
 		_points = new Point[5];
 		_points[0] = new Point(_padding, _padding);
