@@ -13,6 +13,7 @@ public class PlayMoveHistoryFromCurrentCommand extends Command
 		
 		if(invoker.nextHistoryCommandExist()) 
 		{
+			invoker.playingHistory = true;
 			invoker.clearMoveCommandQueue();
 			invoker.setCurrentMoveCommand(null);
 			invoker.getMoveHistoryFromCurrentCommand().forEach((c)->{

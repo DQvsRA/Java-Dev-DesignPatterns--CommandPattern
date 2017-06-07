@@ -34,7 +34,7 @@ import processing.event.MouseEvent;
 
 public class UnitCommands extends PApplet 
 {
-	static private final int SIZE = 800;
+	static private final int SIZE = 300;
 	
 	GUI gui;
 	Unit unit;

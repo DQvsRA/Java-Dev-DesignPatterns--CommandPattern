@@ -17,7 +17,7 @@ public class CreateUnitMoveCommand extends Command
 	{
 		Invoker invoker = Invoker.getInstance();
 		
-		if(invoker.nextHistoryCommandExist() == false)
+		if(invoker.playingHistory == false)
 		{
 			MoveType moveType = unit.getMoveType();
 			Class<?> unitMoveCommandClassRef = invoker.findMoveCommandClass(moveType);

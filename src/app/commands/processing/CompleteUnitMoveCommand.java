@@ -4,6 +4,7 @@ import app.Invoker;
 import app.commands.Command;
 import app.commands.ICommand;
 import app.entities.Path;
+import app.enums.ProcessCommand;
 import de.looksgood.ani.Ani;
 
 public class CompleteUnitMoveCommand extends Command {
@@ -29,6 +30,10 @@ public class CompleteUnitMoveCommand extends Command {
 			command.execute();
 		} else {
 			path.clear();
+			if(invoker.playingHistory) {
+				invoker.playingHistory = false;
+				invoker.executeProcessCommand(ProcessCommand.CHANGE_UNIT_MOVE_TYPE);
+			}
 		}
 	}
 }

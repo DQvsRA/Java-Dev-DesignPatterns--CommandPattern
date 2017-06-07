@@ -28,7 +28,7 @@ public class ChangeUnitMoveTypeCommand extends Command
 		Invoker invoker = Invoker.getInstance();
 		unit.setMoveType(MoveType.values()[(int)moveTypesList.getValue()]);
 		
-		if(unit.isBusy()) 
+		if(unit.isBusy() && invoker.playingHistory == false) 
 		{
 			invoker.clearMoveCommandQueue();
 			invoker.setCurrentMoveCommand(null);

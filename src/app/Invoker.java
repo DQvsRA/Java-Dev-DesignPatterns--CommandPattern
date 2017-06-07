@@ -25,6 +25,8 @@ public final class Invoker
 	private ICommand _currentMoveCommand;
 	private int _moveHistoryCurrentCommandIndex;
 	
+	public boolean playingHistory = false;
+	
 	private Invoker() { }
 	
 	public static Invoker getInstance() {
